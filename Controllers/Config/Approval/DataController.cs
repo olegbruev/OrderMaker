@@ -47,7 +47,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Approval
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostDeleteAsync()
         {
-            string approvalId = Request.Form["IdApproval"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string approvalId = requestForm["IdApproval"];
             if (approvalId == null)
             {
                 return NotFound();
@@ -63,11 +64,13 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Approval
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostStageCreateAsync()
         {
-            string approvalId = Request.Form["IdApproval"];
-            string fieldName = Request.Form["fieldName"];
-            string fieldNote = Request.Form["fieldNote"];
-            string fieldUser = Request.Form["fieldUser"];
-            int.TryParse(Request.Form["fieldStage"], out int fieldStage);
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string approvalId = requestForm["IdApproval"];
+            string fieldName = requestForm["fieldName"];
+            string fieldNote = requestForm["fieldNote"];
+            string fieldUser = requestForm["fieldUser"];
+            string fieldStageStr = requestForm["fieldStage"];
+            int.TryParse(fieldStageStr, out int fieldStage);
             string blockParts = string.Empty;
 
             if (approvalId == null)
@@ -108,11 +111,14 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Approval
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostStageEditAsync()
         {
-            string stageId = Request.Form["IdStage"];
-            string fieldName = Request.Form["fieldName"];
-            string fieldNote = Request.Form["fieldNote"];
-            string fieldUser = Request.Form["fieldUser"];
-            int.TryParse(Request.Form["fieldStage"], out int fieldStage);
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string stageId = requestForm["IdStage"];
+            string fieldName = requestForm["fieldName"];
+            string fieldNote = requestForm["fieldNote"];
+            string fieldUser = requestForm["fieldUser"];
+            string fieldStageStr = requestForm["fieldStage"];
+
+            int.TryParse(fieldStageStr, out int fieldStage);
             string blockParts = string.Empty;
 
             if (stageId == null || !int.TryParse(stageId, out int id))
@@ -151,7 +157,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Approval
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostStageDeleteAsync()
         {
-            string stageId = Request.Form["id-stage-delete"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string stageId = requestForm["id-stage-delete"];
             bool ok = int.TryParse(stageId, out int id);
             if (stageId == null && !ok)
             {
@@ -169,9 +176,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Approval
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostStageSequenceAsync()
         {
-            string strData = Request.Form["drgData"];
-            string approvalId = Request.Form["IdApproval"];
-            string formId = Request.Form["fieldForm"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string strData = requestForm["drgData"];
+            string approvalId = requestForm["IdApproval"];
+            string formId = requestForm["fieldForm"];
 
             string[] data = strData.Split("&");
 

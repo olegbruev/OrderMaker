@@ -53,7 +53,10 @@ namespace Mtd.OrderMaker.Web.DataHandler.Filter
                 foreach (var fs in scripts)
                 {
                     if (fs.Apply == 1)
-                    queryMtdStore = queryMtdStore.FromSql(fs.Script);
+                    {
+                        List<string> scriptIds = await _context.MtdStore.FromSqlRaw(fs.Script).Select(x => x.Id).ToListAsync();
+                        queryMtdStore = queryMtdStore.Where(x => scriptIds.Contains(x.Id));
+                    }                                 
                 }
             }
 

@@ -29,6 +29,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Net.Http.Headers;
 using Mtd.OrderMaker.Web.Areas.Identity.Data;
 using Mtd.OrderMaker.Web.Data;
@@ -40,23 +41,6 @@ using NPOI.XSSF.UserModel;
 
 namespace Mtd.OrderMaker.Web.Controllers.Index
 {
-    public static class IWorkBookExtensions
-    {
-
-        public static void WriteExcelToResponse(this IWorkbook book, HttpContext httpContext, string templateName)
-        {
-            var response = httpContext.Response;
-            response.ContentType = "application/vnd.ms-excel";
-            if (!string.IsNullOrEmpty(templateName))
-            {
-                var contentDisposition = new Microsoft.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
-                contentDisposition.SetHttpFileName(templateName);
-                response.Headers[HeaderNames.ContentDisposition] = contentDisposition.ToString();
-            }
-            book.Write(response.Body);
-        }
-    }
-
     [Route("api/action/index")]
     [ApiController]
     [Authorize(Roles = "Admin,User")]
@@ -65,20 +49,21 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
 
         private readonly OrderMakerContext _context;
         private readonly UserHandler _userHandler;
-        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public ActionController(OrderMakerContext context, UserHandler userHandler, IHostingEnvironment hostingEnvironment)
+        public ActionController(OrderMakerContext context, UserHandler userHandler)
         {
             _context = context;
             _userHandler = userHandler;
-            _hostingEnvironment = hostingEnvironment;
+
+
         }
 
         [HttpPost("excel/export")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostExportAsync()
         {
-            var data = Request.Form["InputFormForExport"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            var data = requestForm["InputFormForExport"];
             if (data.FirstOrDefault() == null || data.FirstOrDefault().Equals(string.Empty)) return NotFound();
             string idForm = data.FirstOrDefault();
 
@@ -107,7 +92,20 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
             IList<MtdFormPartField> columns = incomer.FieldForColumn.Where(x => fieldIds.Contains(x.Id)).ToList();          
             
             IWorkbook workbook = CreateWorkbook(mtdStore, columns, mtdStoreStack);
-            workbook.WriteExcelToResponse(HttpContext, "OrderMakerList.xlsx");
+
+            var ms = new NpoiMemoryStream
+            {
+                AllowClose = false
+            };
+            workbook.Write(ms);
+            ms.Flush();
+            ms.Seek(0, SeekOrigin.Begin);
+            ms.AllowClose = true;
+
+            return new FileStreamResult(ms, new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+            {
+                FileDownloadName = $"{DateTime.UtcNow:yyyyMMddHHmmss}.xlsx"
+            };
 
             return Ok();
         }
@@ -258,4 +256,21 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
         }
 
     }
+
+    public class NpoiMemoryStream : MemoryStream
+    {
+        public NpoiMemoryStream()
+        {
+            AllowClose = true;
+        }
+
+        public bool AllowClose { get; set; }
+
+        public override void Close()
+        {
+            if (AllowClose)
+                base.Close();
+        }
+    }
+
 }

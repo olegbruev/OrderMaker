@@ -18,6 +18,7 @@
 */
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -50,9 +51,11 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostSearchTextAsync()
         {
-            var form = Request.Form["indexForm"];
-            var value = Request.Form["indexSearchText"];
-            var user = await _userManager.GetUserAsync(User);
+            IFormCollection requestForm = await  Request.ReadFormAsync();
+            string form = requestForm["indexForm"];
+            string value = requestForm["indexSearchText"];
+            WebAppUser user = await _userManager.GetUserAsync(User);
+
             MtdFilter filter = await _context.MtdFilter.FirstOrDefaultAsync(x => x.IdUser == user.Id & x.MtdForm == form);
             bool old = true;
             if (filter == null)
@@ -88,11 +91,11 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostSerarchIndexAsync()
         {
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string form = requestForm["formId"];
+            string value = requestForm["searchNumber"];
 
-            string form = Request.Form["formId"];
-            string value = Request.Form["searchNumber"];
-
-            var user = await _userManager.GetUserAsync(User);
+            WebAppUser user = await _userManager.GetUserAsync(User);
             MtdFilter filter = await _context.MtdFilter.FirstOrDefaultAsync(x => x.IdUser == user.Id & x.MtdForm == form);
             bool old = true;
             if (filter == null)
@@ -127,7 +130,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
         {
             int temp = number;
             if (temp > 50) temp = 50;
-            var user = await _userManager.GetUserAsync(User);
+            WebAppUser user = await _userManager.GetUserAsync(User);
             MtdFilter filter = await _context.MtdFilter.FirstOrDefaultAsync(x => x.IdUser == user.Id && x.MtdForm == idForm);
             if (filter == null)
             {
@@ -149,12 +152,12 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
             /* number
              * 1 -  First Page; 2 - back; 3 - forward;
              */
-
-            string idForm = Request.Form["formId"];
-            string formValue = Request.Form["formValue"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string idForm = requestForm["formId"];
+            string formValue = requestForm["formValue"];
             int number = int.Parse(formValue);
 
-            var user = await _userManager.GetUserAsync(User);
+            WebAppUser user = await _userManager.GetUserAsync(User);
             MtdFilter filter = await _context.MtdFilter.FirstOrDefaultAsync(x => x.IdUser == user.Id && x.MtdForm == idForm);
             if (filter == null)
             {
@@ -183,17 +186,18 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostFilterAddAsync()
         {
-            var valueField = Request.Form["indexInputField"];
-            var idForm = Request.Form["indexInputForm"];
-            var valueFilter = Request.Form["indexInputFilter"];
-            var valueTerm = Request.Form["indexInputTerm"];
-            var valueFieldList = Request.Form[$"{valueField}-inputlist"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string valueField = requestForm["indexInputField"];
+            string idForm = requestForm["indexInputForm"];
+            string valueFilter = requestForm["indexInputFilter"];
+            string valueTerm = requestForm["indexInputTerm"];
+            string valueFieldList = requestForm[$"{valueField}-inputlist"];
 
             string result = "";
             if (valueFilter.FirstOrDefault() != null) { result = valueFilter; }
             if (valueFieldList.FirstOrDefault() != null) { result = valueFieldList; }
 
-            var user = await _userManager.GetUserAsync(User);
+            WebAppUser user = await _userManager.GetUserAsync(User);
             MtdFilter filter = await _context.MtdFilter.FirstOrDefaultAsync(x => x.IdUser == user.Id & x.MtdForm == idForm);
 
             if (filter == null)
@@ -217,8 +221,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
 
             } else
             {
-                var dateStart = Request.Form["periodStart"];
-                var dateFinish = Request.Form["periodFinish"];
+                string dateStart = requestForm["periodStart"];
+                string dateFinish = requestForm["periodFinish"];
 
                 bool isOkDateStart = DateTime.TryParse(dateStart, out DateTime dateTimeStart);
                 bool isOkDateFinish = DateTime.TryParse(dateFinish, out DateTime dateTimeFinish);
@@ -255,7 +259,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
 
         private async Task SaveFilterField(StringValues valueField, StringValues valueTerm, string result, MtdFilter filter)
         {
-            var term = int.Parse(valueTerm);
+            int term = int.Parse(valueTerm);
             MtdFilterField field = new MtdFilterField { MtdFilter = filter.Id, MtdFormPartField = valueField, MtdTerm = term, Value = result };
 
             try
@@ -270,7 +274,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostFilterRemoveAsync()
         {
-            string strID = Request.Form["idField"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string strID = requestForm["idField"];
             if (strID.Contains("-field"))
             {
                 strID = strID.Replace("-field", "");
@@ -317,7 +322,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostFilterRemoveAllAsync()
         {
-            string strID = Request.Form["idFilter"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string strID = requestForm["idFilter"];
             bool isOk = int.TryParse(strID,out int idFilter);
             if (!isOk) { return NotFound(); }
 
@@ -349,15 +355,15 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostFilterColumnsAsync()
         {
-
-            var idForm = Request.Form["indexDataColumnIdForm"];
-            var data = Request.Form["indexDataColumnList"];
-            var showNumber = Request.Form["indexDataColumnNumber"];
-            var showDate = Request.Form["indexDataColumnDate"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string idForm = requestForm["indexDataColumnIdForm"];
+            string data = requestForm["indexDataColumnList"];
+            string showNumber = requestForm["indexDataColumnNumber"];
+            string showDate = requestForm["indexDataColumnDate"];
 
             List<string> fieldIds = new List<string>();
-            if (data.FirstOrDefault() != null && data.FirstOrDefault().Length > 0) fieldIds = data.FirstOrDefault().Split(",").ToList();
-            var user = await _userManager.GetUserAsync(User);
+            if (data.FirstOrDefault() != null && data.Length > 0) fieldIds = data.Split(",").ToList();
+            WebAppUser user = await _userManager.GetUserAsync(User);
             MtdFilter filter = await _context.MtdFilter.Include(m => m.MtdFilterColumn).FirstOrDefaultAsync(x => x.IdUser == user.Id & x.MtdForm == idForm);
 
             if (filter == null)
@@ -417,7 +423,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostWaitListSetAsync()
         {
-            string idForm = Request.Form["id-form-waitlist"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string idForm = requestForm["id-form-waitlist"];
             WebAppUser user = await _userManager.GetUserAsync(HttpContext.User);
             MtdFilter mtdFilter = await _context.MtdFilter.Where(x => x.IdUser == user.Id && x.MtdForm == idForm).FirstOrDefaultAsync();
             if (mtdFilter == null)
@@ -449,7 +456,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostFilterScriptAsync()
         {
-            var valueField = Request.Form["script-selector"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string valueField = requestForm["script-selector"];
             bool isOk = int.TryParse(valueField, out int id);
             if (!isOk) { return NotFound(); }
             MtdFilterScript mtdFilterScript = await _context.MtdFilterScript.FindAsync(id);

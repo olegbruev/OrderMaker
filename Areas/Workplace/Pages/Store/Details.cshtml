@@ -98,7 +98,7 @@
 
 @section Action  {
 
-    @if (Model.IsEditor)
+    @if (Model.IsEditor & Model.ApprovalStatus != ApprovalStatus.Rejected & Model.ApprovalStatus != ApprovalStatus.Waiting)
     {
         <li mtd-data-href="/workplace/store/edit?id=@Model.MtdStore.Id" class="mdc-list-item" role="menuitem">
             <span class="mdc-list-item__graphic material-icons" aria-hidden="true">edit</span>

@@ -126,6 +126,7 @@ namespace Mtd.OrderMaker.Web.Services
 
         public async Task<bool> IsEditor(WebAppUser user, string idForm, string idStore = null)
         {
+            
             return await IsRights("-edit", user, idForm, idStore);
         }
 

@@ -48,7 +48,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostDeleteAsync()
         {
-            string formId = Request.Form["IdForm"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string formId = requestForm["IdForm"];
             if (formId == null)
             {
                 return NotFound();
@@ -75,7 +76,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostSequenceAsync()
         {
-            string strData = Request.Form["formSeqData"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string strData = requestForm["formSeqData"];
 
             string[] data = strData.Split("&");
 
@@ -102,9 +104,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostFieldSequenceAsync()
         {
-            string strData = Request.Form["fieldSeqData"];
-            string partId = Request.Form["fieldPart"];
-            string fieldId = Request.Form["fieldForm"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string strData = requestForm["fieldSeqData"];
+            string partId = requestForm["fieldPart"];
+            string fieldId = requestForm["fieldForm"];
 
             string[] data = strData.Split("&");
 
@@ -131,13 +134,14 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostFieldCreateAsync()
         {
-            string formId = Request.Form["formId"];
-            string partId = Request.Form["partId"];
-            string fieldId = Request.Form["fieldId"];
-            string fieldName = Request.Form["fieldName"];
-            string fieldNote = Request.Form["fieldNote"];
-            string fieldType = Request.Form["fieldType"];
-            string fieldForm = Request.Form["fieldForm"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string formId = requestForm["formId"];
+            string partId = requestForm["partId"];
+            string fieldId = requestForm["fieldId"];
+            string fieldName = requestForm["fieldName"];
+            string fieldNote = requestForm["fieldNote"];
+            string fieldType = requestForm["fieldType"];
+            string fieldForm = requestForm["fieldForm"];
 
             int fieldTypeID = int.Parse(fieldType);
 
@@ -184,11 +188,12 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostFieldEditAsync()
         {
-            string formId = Request.Form["formId"];
-            string partId = Request.Form["fieldPart"];
-            string fieldId = Request.Form["fieldId"];
-            string fieldName = Request.Form["fieldName"];
-            string fieldNote = Request.Form["fieldNote"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string formId = requestForm["formId"];
+            string partId = requestForm["fieldPart"];
+            string fieldId = requestForm["fieldId"];
+            string fieldName = requestForm["fieldName"];
+            string fieldNote = requestForm["fieldNote"];
 
             MtdFormPartField mtdFormPartField = await _context.MtdFormPartField.FindAsync(fieldId);
 
@@ -211,7 +216,9 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostFieldDeleteAsync()
         {
-            string fieldId = Request.Form["fieldId"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+
+            string fieldId = requestForm["fieldId"];
 
             MtdFormPartField mtdFormPartField = new MtdFormPartField
             {
@@ -229,9 +236,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostPartSequenceAsync()
         {
-            string strData = Request.Form["fieldSeqData"];
-            string partId = Request.Form["fieldPart"];
-            string formId = Request.Form["fieldForm"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string strData = requestForm["fieldSeqData"];
+            string partId = requestForm["fieldPart"];
+            string formId = requestForm["fieldForm"];
 
             string[] data = strData.Split("&");
 
@@ -258,10 +266,11 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostPartCreateAsync()
         {
-            string formId = Request.Form["formId"];
-            string partId = Request.Form["partId"];
-            string partName = Request.Form["partName"];
-            string partNote = Request.Form["partNote"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string formId = requestForm["formId"];
+            string partId = requestForm["partId"];
+            string partName = requestForm["partName"];
+            string partNote = requestForm["partNote"];
 
             bool check = Guid.TryParse(partId, out Guid result);
 
@@ -300,14 +309,15 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostPartEditAsync()
         {
-            string formId = Request.Form["formId"];
-            string partId = Request.Form["partId"];
-            string partName = Request.Form["partName"];
-            string partNote = Request.Form["partNote"];
-            string partStyle = Request.Form["partStyle"];
-            string partTitle = Request.Form["partTitle"];
-            string partChild = Request.Form["partChild"];            
-            string partSeq = Request.Form["partSeq"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string formId = requestForm["formId"];
+            string partId = requestForm["partId"];
+            string partName = requestForm["partName"];
+            string partNote = requestForm["partNote"];
+            string partStyle = requestForm["partStyle"];
+            string partTitle = requestForm["partTitle"];
+            string partChild = requestForm["partChild"];            
+            string partSeq = requestForm["partSeq"];
 
             int styleId = int.Parse(partStyle);
             int sequence = int.Parse(partSeq);
@@ -335,10 +345,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
             _context.Attach(mtdFormPart).State = EntityState.Modified;
 
             string idCheckBox = "header-delete";
-            if (Request.Form[idCheckBox].FirstOrDefault() == null || Request.Form[idCheckBox].FirstOrDefault() == "false")
+            if (requestForm[idCheckBox].FirstOrDefault() == null || requestForm[idCheckBox].FirstOrDefault() == "false")
             {
                 string idInput = "header-file-upload-input";
-                IFormFile file = Request.Form.Files.FirstOrDefault(x => x.Name == idInput);
+                IFormFile file = requestForm.Files.FirstOrDefault(x => x.Name == idInput);
                 if (file != null)
                 {
                     byte[] streamArray = new byte[file.Length];
@@ -373,7 +383,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Config.Form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostPartDeleteAsync()
         {
-            string partId = Request.Form["partId"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string partId = requestForm["partId"];
 
             MtdFormPart mtdFormPart = new MtdFormPart
             {

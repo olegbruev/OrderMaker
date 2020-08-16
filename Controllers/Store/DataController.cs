@@ -53,7 +53,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostSaveAsync()
         {
-            string Id = Request.Form["idStore"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string Id = requestForm["idStore"];
 
             MtdStore mtdStore = await _context.MtdStore.FirstOrDefaultAsync(x => x.Id == Id);
             if (mtdStore == null)
@@ -63,8 +64,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
 
             WebAppUser webAppUser = await _userHandler.GetUserAsync(HttpContext.User);
             bool isEditor = await _userHandler.IsEditor(webAppUser, mtdStore.MtdForm, mtdStore.Id);
+            ApprovalHandler approvalHandler = new ApprovalHandler(_context, mtdStore.Id);
+            ApprovalStatus approvalStatus = await approvalHandler.GetStatusAsync(webAppUser);
 
-            if (!isEditor)
+            if (!isEditor || approvalStatus == ApprovalStatus.Rejected || approvalStatus == ApprovalStatus.Waiting)
             {
                 return Ok(403);
             }
@@ -78,7 +81,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
             };
 
 
-            OutData outData = await CreateDataAsync(Id, webAppUser, TypeAction.Edit);
+            OutData outData = await CreateDataAsync(Id, webAppUser, TypeAction.Edit, requestForm);
             List<MtdStoreStack> stackNew = outData.MtdStoreStacks;
 
 
@@ -152,8 +155,9 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostCreateAsync()
         {
-            string idForm = Request.Form["idForm"];
-            string idFormParent = Request.Form["store-parent-id"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string idForm = requestForm["idForm"];
+            string idFormParent = requestForm["store-parent-id"];
 
             WebAppUser webAppUser = await _userHandler.GetUserAsync(HttpContext.User);
             bool isCreator = await _userHandler.IsCreator(webAppUser, idForm);
@@ -168,8 +172,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
             if (forms != null && forms.Count > 0) { sequence = forms.Max(x => x.Sequence); } else sequence = 0;
             sequence++;
 
-            MtdStore mtdStore = new MtdStore { MtdForm = idForm, Sequence = sequence, Parent = idFormParent.Length > 0 ? idFormParent : null };
-
+            MtdStore mtdStore = new MtdStore {Id = Guid.NewGuid().ToString(), MtdForm = idForm, Sequence = sequence, Parent = idFormParent.Length > 0 ? idFormParent : null };
 
             await _context.MtdStore.AddAsync(mtdStore);
             await _context.SaveChangesAsync();
@@ -191,21 +194,22 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
 
             await _context.MtdLogDocument.AddAsync(mtdLog);
 
-            OutData outParam = await CreateDataAsync(mtdStore.Id, webAppUser, TypeAction.Create);
+            OutData outParam = await CreateDataAsync(mtdStore.Id, webAppUser, TypeAction.Create, requestForm);
             List<MtdStoreStack> stackNew = outParam.MtdStoreStacks;
             await _context.MtdStoreStack.AddRangeAsync(stackNew);
 
             await _context.SaveChangesAsync();
             _context.Database.CommitTransaction();
 
-            return Ok(mtdStore);
+            return Ok();
         }
 
         [HttpPost("delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostDeleteAsync()
         {
-            string idStore = Request.Form["store-delete-id"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string idStore = requestForm["store-delete-id"];
             MtdStore mtdStore = await _context.MtdStore.FindAsync(idStore);
 
             if (mtdStore == null)
@@ -232,9 +236,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostGetIDAsync()
         {
+            IFormCollection requestForm = await Request.ReadFormAsync();
             string result = "";
-            string idFormPart = Request.Form["idFromParent"];
-            string parentNumber = Request.Form["store-parent-number"];
+            string idFormPart = requestForm["idFromParent"];
+            string parentNumber = requestForm["store-parent-number"];
 
             if (parentNumber.Length == 0) { return Ok(result); }
 
@@ -257,9 +262,9 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostSetOwnerAsync()
         {
-
-            string idStore = Request.Form["setowner-id-store"];
-            string idUser = Request.Form["setowner-id-user"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string idStore = requestForm["setowner-id-store"];
+            string idUser = requestForm["setowner-id-user"];
 
             WebAppUser webAppUser = await _userHandler.FindByIdAsync(idUser);
             
@@ -302,9 +307,9 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
             return Ok();
         }
 
-        private async Task<OutData> CreateDataAsync(string Id, WebAppUser user, TypeAction typeAction)
+        private async Task<OutData> CreateDataAsync(string Id, WebAppUser user, TypeAction typeAction, IFormCollection requestForm)
         {
-
+           
             var store = await _context.MtdStore
                .Include(m => m.MtdFormNavigation)
                .ThenInclude(p => p.MtdFormPart)
@@ -355,7 +360,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
 
             foreach (MtdFormPartField field in fields)
             {
-                var data = Request.Form[field.Id];
+                string data = requestForm[field.Id];
                 MtdStoreStack mtdStoreStack = new MtdStoreStack()
                 {
                     MtdStore = Id,
@@ -367,9 +372,9 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
                 {
                     case 2:
                         {
-                            if (data.FirstOrDefault() != string.Empty)
+                            if (data != string.Empty)
                             {
-                                bool isOkInt = int.TryParse(data.FirstOrDefault(), out int result);
+                                bool isOkInt = int.TryParse(data, out int result);
                                 if (isOkInt)
                                 {
                                     mtdStoreStack.MtdStoreStackInt = new MtdStoreStackInt { Register = result };
@@ -380,10 +385,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
                         }
                     case 3:
                         {
-                            if (data.FirstOrDefault() != string.Empty)
+                            if (data != string.Empty)
                             {
                                 string separ = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-                                bool isOkDecimal = decimal.TryParse(data.FirstOrDefault().Replace(".", separ), out decimal result);
+                                bool isOkDecimal = decimal.TryParse(data.Replace(".", separ), out decimal result);
                                 if (isOkDecimal)
                                 {
                                     mtdStoreStack.MtdStoreStackDecimal = new MtdStoreStackDecimal { Register = result };
@@ -396,9 +401,9 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
                     case 6:
                     case 10:
                         {
-                            if (data.FirstOrDefault() != string.Empty)
+                            if (data != string.Empty)
                             {
-                                bool isOkDate = DateTime.TryParse(data.FirstOrDefault(), out DateTime dateTime);
+                                bool isOkDate = DateTime.TryParse(data, out DateTime dateTime);
                                 if (isOkDate)
                                 {
                                     mtdStoreStack.MtdStoreStackDate = new MtdStoreStackDate { Register = dateTime };
@@ -411,12 +416,12 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
                     case 8:
                         {
 
-                            var actionDelete = Request.Form[$"{field.Id}-delete"];
+                            var actionDelete = requestForm[$"{field.Id}-delete"];
 
                             if (actionDelete.FirstOrDefault() == null || actionDelete.FirstOrDefault() == "false")
                             {
 
-                                IFormFile file = Request.Form.Files.FirstOrDefault(x => x.Name == field.Id);
+                                IFormFile file = requestForm.Files.FirstOrDefault(x => x.Name == field.Id);
 
                                 if (file != null)
                                 {
@@ -457,10 +462,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
 
                     case 11:
                         {
-                            if (data.FirstOrDefault() != string.Empty)
+                            if (data != string.Empty)
                             {
                                 string datalink = Request.Form[$"{field.Id}-datalink"];
-                                mtdStoreStack.MtdStoreLink = new MtdStoreLink { MtdStore = data.FirstOrDefault(), Register = datalink };
+                                mtdStoreStack.MtdStoreLink = new MtdStoreLink { MtdStore = data, Register = datalink };
                             }
 
                             break;
@@ -468,7 +473,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
 
                     case 12:
                         {
-                            bool isOkCheck = bool.TryParse(data.FirstOrDefault(), out bool check);
+                            bool isOkCheck = bool.TryParse(data, out bool check);
                             if (isOkCheck)
                             {
                                 mtdStoreStack.MtdStoreStackInt = new MtdStoreStackInt { Register = check ? 1 : 0 };
@@ -478,9 +483,9 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
 
                     default:
                         {
-                            if (data.FirstOrDefault() != string.Empty)
+                            if (data != string.Empty)
                             {
-                                mtdStoreStack.MtdStoreStackText = new MtdStoreStackText() { Register = data.FirstOrDefault() };
+                                mtdStoreStack.MtdStoreStackText = new MtdStoreStackText() { Register = data };
                             }
                             break;
                         }

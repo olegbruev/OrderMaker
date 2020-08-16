@@ -18,6 +18,7 @@
 */
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Mtd.OrderMaker.Web.Data;
 using System;
@@ -44,8 +45,9 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAddAsync()
         {
-            string name = Request.Form["group-name"];
-            string note = Request.Form["group-note"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string name = requestForm["group-name"];
+            string note = requestForm["group-note"];
 
             MtdGroup mtdGroup = new MtdGroup { Name = name, Description = note };
 
@@ -59,9 +61,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostEditAsync()
         {
-            string id = Request.Form["group-id"];
-            string name = Request.Form["group-name"];
-            string note = Request.Form["group-note"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string id = requestForm["group-id"];
+            string name = requestForm["group-name"];
+            string note = requestForm["group-note"];
 
             MtdGroup mtdGroup = await _context.MtdGroup.FindAsync(id);
             if (mtdGroup == null) { return NotFound(); }
@@ -79,7 +82,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostDeleteAsync()
         {
-            string id = Request.Form["group-id"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string id = requestForm["group-id"];
 
             MtdGroup mtdGroup = new MtdGroup { Id = id  };
 

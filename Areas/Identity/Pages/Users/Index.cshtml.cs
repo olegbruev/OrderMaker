@@ -24,16 +24,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Mtd.OrderMaker.Web.Areas.Identity.Data;
+using Mtd.OrderMaker.Web.Services;
 
 namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Users
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<WebAppUser> _userManager;
+        private readonly UserHandler _userManager;
         private readonly RoleManager<WebAppRole> _roleManager;
 
-        public IndexModel(UserManager<WebAppUser> userManager, RoleManager<WebAppRole> roleManager)
+        public IndexModel(UserHandler userManager, RoleManager<WebAppRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -46,7 +48,7 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Users
         public async Task<IActionResult> OnGetAsync(string searchText)
         {
 
-            var query = _userManager.Users;
+            IQueryable<WebAppUser> query = _userManager.Users;
             if (searchText != null)
             {
                 string normText = searchText.ToUpper();
@@ -57,8 +59,9 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Users
             }
 
             Persons = new List<WebAppPerson>();
+            IList<WebAppUser> users = await query.ToListAsync();
 
-            foreach (var user in query) {
+            foreach (var user in users) {
                var roles = await _userManager.GetRolesAsync(user);
                 Persons.Add(new WebAppPerson {
                      User = user,

@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Mtd.OrderMaker.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace Mtd.OrderMaker.Web.Controllers.Store
 {
@@ -57,7 +58,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostApproveAsync()
         {
-            string storeId = Request.Form["id-store"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string storeId = requestForm["id-store"];
             WebAppUser webAppUser = await _userHandler.GetUserAsync(HttpContext.User);
             ApprovalHandler approvalHandler = new ApprovalHandler(_context, storeId);
             bool isApprover = await approvalHandler.IsApproverAsync(webAppUser);
@@ -75,9 +77,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Store
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostRejectAsync()
         {
-            string storeId = Request.Form["id-store"];
-            bool completeOk = bool.TryParse(Request.Form["checkbox-complete"], out bool completeCheck);
-            bool stageOk = int.TryParse(Request.Form["next-stage"], out int stageId);
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string storeId = requestForm["id-store"];
+            bool completeOk = bool.TryParse(requestForm["checkbox-complete"], out bool completeCheck);
+            bool stageOk = int.TryParse(requestForm["next-stage"], out int stageId);
             if (!stageOk || !completeOk) { return NotFound(); }
 
             WebAppUser webAppUser = await _userHandler.GetUserAsync(HttpContext.User);

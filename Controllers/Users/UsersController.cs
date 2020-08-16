@@ -23,6 +23,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -83,7 +84,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         [HttpPost("admin/delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAdminDeleteAsync() {
-            var userId = Request.Form["user-delete-id"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            var userId = requestForm["user-delete-id"];
             var user = await _userManager.FindByIdAsync(userId);
 
             IList<MtdFilter> mtdFilters = await _context.MtdFilter.Where(x => x.IdUser == user.Id).ToListAsync();
@@ -97,7 +99,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAdminProfileAsync() {
 
-            var username = Request.Form["UserName"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            var username = requestForm["UserName"];
 
             if (username.Count == 0) {
                 return BadRequest();
@@ -110,10 +113,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
                 return NotFound();
             }
 
-            string email = Request.Form["Input.Email"];
-            string title = Request.Form["Input.Title"];
-            string phone = Request.Form["Input.PhoneNumber"];
-            string roleId = Request.Form["Input.Role"];
+            string email = requestForm["Input.Email"];
+            string title = requestForm["Input.Title"];
+            string phone = requestForm["Input.PhoneNumber"];
+            string roleId = requestForm["Input.Role"];
             WebAppRole roleUser = await _roleManager.FindByIdAsync(roleId);
 
             string[] formConfirm = Request.Form["Input.IsConfirm"];
@@ -155,9 +158,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
 
         [HttpPost("admin/claims")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> OnPostAdminClaimsAsync() {            
+        public async Task<IActionResult> OnPostAdminClaimsAsync() {
 
-            var userId = Request.Form["user-id"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            var userId = requestForm["user-id"];
 
             if (userId == string.Empty) { return NotFound(); }
 
@@ -172,7 +176,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
 
             foreach (MtdGroup group in groups)
             {
-                string value = Request.Form[$"{group.Id}-group"];
+                string value = requestForm[$"{group.Id}-group"];
                 if (value == "true")
                 {
                     Claim claim = new Claim(group.Id, "-group");
@@ -184,7 +188,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
             {
                 foreach(string claimValue in claimValues)
                 {
-                    string value =  Request.Form[$"{form.Id}{claimValue}"];
+                    string value =  requestForm[$"{form.Id}{claimValue}"];
                     if (value == "true")
                     {
                         Claim claim = new Claim(form.Id, claimValue);                        
@@ -197,7 +201,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
                 {
                     foreach (string claimPart in claimParts)
                     {
-                        string value = Request.Form[$"{mtdFormPart.Id}{claimPart}"];
+                        string value = requestForm[$"{mtdFormPart.Id}{claimPart}"];
                         if (value == "true")
                         {
                             Claim claim = new Claim(mtdFormPart.Id, claimPart);

@@ -18,6 +18,7 @@
 */
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Mtd.OrderMaker.Web.Data;
@@ -38,7 +39,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAdminConfimEmailAsync()
         {
-            string userName = Request.Form["UserName"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string userName = requestForm["UserName"];
             var user = await _userManager.FindByNameAsync(userName);
 
             if (user == null)
@@ -80,8 +82,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAdminConfirmPasswordAsync()
         {
-
-            string userName = Request.Form["UserName"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            string userName = requestForm["UserName"];
             var user = await _userManager.FindByNameAsync(userName);
 
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
@@ -122,7 +124,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAdminClaimsAll()
         {
-            var userId = Request.Form["user-id"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            var userId = requestForm["user-id"];
 
             if (userId == string.Empty) { return NotFound(); }
             var user = await _userManager.FindByIdAsync(userId);
@@ -179,7 +182,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAdminClaimsClear()
         {
-            var userId = Request.Form["user-id"];
+            IFormCollection requestForm = await Request.ReadFormAsync();
+            var userId = requestForm["user-id"];
             if (userId == string.Empty) { return NotFound(); }
 
             var user = await _userManager.FindByIdAsync(userId);

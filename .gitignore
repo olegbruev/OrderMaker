@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+Mtd.OrderMaker.Web.sln
 appsettings.json
 appsettings.Development.json
 appsettings.Prodaction.json
