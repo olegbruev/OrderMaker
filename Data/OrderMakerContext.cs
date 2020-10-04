@@ -978,7 +978,7 @@ namespace Mtd.OrderMaker.Web.Data
                 entity.Property(e => e.Timecr)
                     .HasColumnName("timecr")
                     .HasColumnType("timestamp")
-                    .HasDefaultValueSql("'CURRENT_TIMESTAMP'");
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(d => d.MtdFormNavigation)
                     .WithMany(p => p.MtdStore)

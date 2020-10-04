@@ -21,9 +21,6 @@ namespace Mtd.OrderMaker.Web.DataConfig
     public class ConfigSettings
     {
         public string EmailSupport { get; set; }
-        public string DefaultUSR { get; set; }
-        public string DefaultPWD { get; set; }
         public string CultureInfo { get; set; }
-        public string Migrate { get; set; }
     }
 }
