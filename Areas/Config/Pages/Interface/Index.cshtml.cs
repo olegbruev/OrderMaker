@@ -24,8 +24,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Mtd.OrderMaker.Web.Data;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Options;
+using Mtd.OrderMaker.Web.DataConfig;
+using System.Globalization;
+using System.Threading;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Localization;
 
 namespace Mtd.OrderMaker.Web.Areas.Config.Pages.Interface
 {
@@ -34,15 +42,27 @@ namespace Mtd.OrderMaker.Web.Areas.Config.Pages.Interface
     {
 
         private readonly OrderMakerContext _context;
-
-
-        public IndexModel(OrderMakerContext context)
+        private readonly IOptions<RequestLocalizationOptions> locOptions;
+        private readonly IHostApplicationLifetime appLifetime;
+        public IndexModel(OrderMakerContext context, IOptions<RequestLocalizationOptions> locOptions)
         {
             _context = context;
+            this.locOptions = locOptions;
+            this.appLifetime = appLifetime;
         }
+
+        public List<SelectListItem> CultureItems { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
+            //c.Name == "en-US" ? "English (USA)" : "Русский (Россия)" 
+            int cultureId = (int)ConfigParamId.DefaultCulture;
+            string culture = _context.MtdConfigParam.Where(x=>x.Id == cultureId).Select(x=>x.Value).FirstOrDefault();
+
+            CultureItems = locOptions.Value.SupportedUICultures
+                .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName , Selected = culture == c.Name })
+                .ToList();
+
             ViewData["ImgMenu"] = await GetImageFromConfig(1);
             ViewData["ImgAppBar"] = await GetImageFromConfig(2);
             var barColor = await _context.MtdConfigParam.Where(x => x.Id == 1).Select(x => x.Value).FirstOrDefaultAsync();
@@ -56,17 +76,33 @@ namespace Mtd.OrderMaker.Web.Areas.Config.Pages.Interface
         public async Task<IActionResult> OnPostAsync()
         {
 
+            var requestForm = await Request.ReadFormAsync();  
+            string colorBar = requestForm["color-bar"];
+            string colorIcon = requestForm["color-icon"];
+            string culture = requestForm["culture"];
+
+            int cultureId = (int)ConfigParamId.DefaultCulture;
+            MtdConfigParam param = await _context.MtdConfigParam.FindAsync(cultureId);
+            if (param != null)
+            {
+                param.Value = culture;
+                _context.MtdConfigParam.Update(param);
+            }
+            else
+            {
+                param = new MtdConfigParam { Id = cultureId, Name = ConfigParamId.DefaultCulture.ToString(), Value = culture };
+                await _context.MtdConfigParam.AddAsync(param);
+            }
+
+            locOptions.Value.DefaultRequestCulture = new RequestCulture(culture);
+
             await SaveImg(1);
             await SaveImg(2);
-
-            string colorBar = Request.Form["color-bar"];
-            string colorIcon = Request.Form["color-icon"];
 
             await SaveBarColor(colorBar);
             await SaveIconColor(colorIcon);
 
             await _context.SaveChangesAsync();
-
 
 
             return Page();

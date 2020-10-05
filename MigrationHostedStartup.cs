@@ -39,11 +39,11 @@ namespace Mtd.OrderMaker.Web
 
                 var idnContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
                 IEnumerable<string> pmIdn = await idnContext.Database.GetPendingMigrationsAsync();
-                bool startMigration = pmIdn.Count() > 0;
+                bool idnMigration = pmIdn.Count() > 0;
                 IEnumerable<string> amIdn = await idnContext.Database.GetAppliedMigrationsAsync();
                 bool idnNoInit = amIdn.Count() == 0;
 
-                if (startMigration)
+                if (idnMigration)
                 {
                     await idnContext.Database.MigrateAsync();
                     if (idnNoInit) { await InitIdentityAsync(scope); }

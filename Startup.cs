@@ -63,7 +63,7 @@ namespace Mtd.OrderMaker.Web
             {
 
                 options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
             });
 
             services.AddDbContext<IdentityDbContext>(options =>
@@ -127,6 +127,23 @@ namespace Mtd.OrderMaker.Web
                 builder.AddRazorRuntimeCompilation();
             }
 #endif
+
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("ru-RU"),
+                };
+
+                options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+                options.RequestCultureProviders = new[] { new CookieRequestCultureProvider() };
+
+            });
+
         }
 
 
@@ -145,19 +162,21 @@ namespace Mtd.OrderMaker.Web
                 app.UseHsts();
             }
 
-            var cultureInfo = new CultureInfo(config.Value.CultureInfo);
-            var localizationOptions = new RequestLocalizationOptions()
+            var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            var context = serviceProvider.GetRequiredService<OrderMakerContext>();
+            int cultureId = (int) ConfigParamId.DefaultCulture;
+            bool canConnect = context.Database.CanConnect();
+            if (canConnect)
             {
-                SupportedCultures = new List<CultureInfo> { cultureInfo },
-                SupportedUICultures = new List<CultureInfo> { cultureInfo },
-                DefaultRequestCulture = new RequestCulture(cultureInfo),
+                string culture = context.MtdConfigParam.Where(x => x.Id == cultureId).Select(x => x.Value).FirstOrDefault();
+                if (culture != null)
+                {
+                    locOptions.Value.DefaultRequestCulture = new RequestCulture(culture);
+                }
+            }
+            
 
-                FallBackToParentCultures = false,
-                FallBackToParentUICultures = false,
-                RequestCultureProviders = null
-            };
-
-            app.UseRequestLocalization(localizationOptions);
+            app.UseRequestLocalization(locOptions.Value);
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

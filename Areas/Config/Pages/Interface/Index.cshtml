@@ -26,6 +26,7 @@
 @{
     ViewData["Title"] = Localizer["Interface"];
     ViewData["SecondTitle"] = Localizer["Display elements"];
+
 }
 
 @section Head {
@@ -164,6 +165,14 @@
             </div>
 
         </div>
+        <div class="mtd-desk-fields">
+            <div class="mtd-desk-field">
+                <div>
+                    <label>@Localizer["Default language interface"] </label>
+                    <select class="mdc-select mdc-select__native-control" name="culture" asp-items="@Model.CultureItems"></select>
+                </div>
+            </div>
+        </div>
     </form>
 
 </div>
@@ -172,6 +181,5 @@
 @section Scripts {
     <script src="~/lib/mtd-ordermaker/config/js/mtd-config-form.js" asp-append-version="true"></script>
     <script src="~/lib/mtd-ordermaker/filechoose/js/mtd-file-choose.js" asp-append-version="true"></script>
-
 }
 

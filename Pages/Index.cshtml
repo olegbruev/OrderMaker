@@ -60,28 +60,28 @@
                 colorBack = form.MtdFormDesk.ColorBack;
             }
 
-            <div class="mdc-card" style="width: 290px; margin: 8px;">
-                <div mtd-data-href="/workplace/store?indexform=@form.Id" class="mdc-card__primary-action" tabindex="0">
-                    <div class="mdc-card__media mdc-card__media--16-9 demo-card__media"
-                         style="background-color: @colorBack; background-image: url(&quot;@imgSrc&quot;);">
-                        <div class="mdc-card__media-content" style="display: flex; align-items: flex-end; color: @colorFont">
-                            <div style="padding: 0.7rem; width: 100%;">
-                                @if (form.MtdFormHeader != null)
+        <div class="mdc-card" style="width: 290px; margin: 8px;">
+            <div mtd-data-href="/workplace/store?indexform=@form.Id" class="mdc-card__primary-action" tabindex="0">
+                <div class="mdc-card__media mdc-card__media--16-9 demo-card__media"
+                     style="background-color: @colorBack; background-image: url(&quot;@imgSrc&quot;);">
+                    <div class="mdc-card__media-content" style="display: flex; align-items: flex-end; color: @colorFont">
+                        <div style="padding: 0.7rem; width: 100%;">
+                            @if (form.MtdFormHeader != null)
                                 {
                                     var base64 = Convert.ToBase64String(form.MtdFormHeader.Image);
                                     var imgSrc2 = String.Format("data:{0};base64,{1}", form.MtdFormHeader.ImageType, base64);
 
-                                    <img src="@imgSrc2" style="height: 48px; max-width: 250px; position: absolute; top: 4px" />
+                            <img src="@imgSrc2" style="height: 48px; max-width: 250px; position: absolute; top: 4px" />
                                 }
 
-                                <p class="mdc-typography mdc-typography--headline6" style="margin:24px; font-size: 22px; line-height: 1.2rem;">@form.Name</p>
-                                <hr />
-                                @*<span class="mdc-typography mdc-typography--subtitle2" style="margin:0; font-size: medium; text-transform:lowercase">Раздел: @form.MtdGroupNavigation.Name</span>*@
-                            </div>
+                            <p class="mdc-typography mdc-typography--headline6" style="margin:24px; font-size: 22px; line-height: 1.2rem;">@form.Name</p>
+                            <hr />
+                            @*<span class="mdc-typography mdc-typography--subtitle2" style="margin:0; font-size: medium; text-transform:lowercase">Раздел: @form.MtdGroupNavigation.Name</span>*@
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         }
     </div>
 </div>

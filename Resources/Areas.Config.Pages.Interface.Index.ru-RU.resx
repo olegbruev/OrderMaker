@@ -126,6 +126,9 @@
   <data name="Configurator" xml:space="preserve">
     <value>Конфигуратор</value>
   </data>
+  <data name="Default language interface" xml:space="preserve">
+    <value>Язык интерфейса по умолчанию</value>
+  </data>
   <data name="Delete image" xml:space="preserve">
     <value>Удалить изображение</value>
   </data>

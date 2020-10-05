@@ -17,9 +17,12 @@
     along with this program.  If not, see  https://www.gnu.org/licenses/.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -89,6 +92,20 @@ namespace Mtd.OrderMaker.Web.Pages
             Forms = await query.ToListAsync();
             return Page();
         }
+
+
+        /*Sample code that makes a Culture change*/
+        //[HttpPost]
+        //public IActionResult OnPost(string culture)
+        //{
+        //    Response.Cookies.Append(
+        //        CookieRequestCultureProvider.DefaultCookieName,
+        //        CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+        //        new CookieOptions { Path = "/", HttpOnly = false, IsEssential = true, Expires = DateTimeOffset.UtcNow.AddMonths(1) }
+        //    );
+
+        //    return RedirectToPage("./Index");
+        //}
 
     }
 }
