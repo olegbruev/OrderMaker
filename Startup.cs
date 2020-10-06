@@ -108,9 +108,7 @@ namespace Mtd.OrderMaker.Web
             services.AddScoped<UserHandler>();
             services.AddTransient<ConfigHandler>();
             services.AddTransient<IEmailSender, EmailSender>();
-            services.AddTransient<IEmailSenderBlank, EmailSenderBlank>();
-            services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
-            services.Configure<ConfigSettings>(Configuration.GetSection("ConfigSettings"));
+            services.AddTransient<IEmailSenderBlank, EmailSenderBlank>();               
 
             services.AddDataProtection()
                     .SetApplicationName($"ordermaker-{CurrentEnvironment.EnvironmentName}")
@@ -148,9 +146,7 @@ namespace Mtd.OrderMaker.Web
 
 
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
-        {
-            var config = serviceProvider.GetRequiredService<IOptions<ConfigSettings>>();
-
+        {          
             if (CurrentEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

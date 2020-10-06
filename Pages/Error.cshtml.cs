@@ -31,8 +31,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Mtd.OrderMaker.Web.Areas.Identity.Data;
+using Mtd.OrderMaker.Web.Data;
 using Mtd.OrderMaker.Web.DataConfig;
 
 namespace Mtd.OrderMaker.Web.Pages
@@ -40,24 +42,23 @@ namespace Mtd.OrderMaker.Web.Pages
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class ErrorModel : PageModel
     {
-        
+
         private readonly IEmailSender _emailSender;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly ConfigSettings _emailSupport;
+        private readonly OrderMakerContext context;
 
         public string RequestId { get; set; }
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-        public ErrorModel(      
-            IEmailSender emailSender, 
-            IHostingEnvironment hostingEnvironment, 
-            IOptions<ConfigSettings> emailSupport)
+        public ErrorModel(
+            IEmailSender emailSender,
+            IHostingEnvironment hostingEnvironment, OrderMakerContext context)
+
         {
-            
             _emailSender = emailSender;
             _hostingEnvironment = hostingEnvironment;
-            _emailSupport = emailSupport.Value;
+            this.context = context;
         }
 
 
@@ -69,7 +70,7 @@ namespace Mtd.OrderMaker.Web.Pages
             {
 
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
-    
+
                 string webRootPath = _hostingEnvironment.WebRootPath;
                 string contentRootPath = _hostingEnvironment.ContentRootPath;
                 var file = Path.Combine(contentRootPath, "wwwroot", "lib", "mtd-ordermaker", "emailform", "error.html");
@@ -81,10 +82,14 @@ namespace Mtd.OrderMaker.Web.Pages
                 htmlText = htmlText.Replace("{Path}", exceptionFeature.Path);
                 htmlText = htmlText.Replace("{Query}", HttpContext.Request.QueryString.Value);
                 htmlText = htmlText.Replace("{Message}", exceptionFeature.Error.Message);
-                htmlText = htmlText.Replace("{Sorce}", exceptionFeature.Error.Source);                
+                htmlText = htmlText.Replace("{Sorce}", exceptionFeature.Error.Source);
                 htmlText = htmlText.Replace("{UserName}", User.Identity.Name);
 
-                await _emailSender.SendEmailAsync(_emailSupport.EmailSupport, "Server Error", htmlText);                
+                string emailSupport = await context.MtdConfigParam.Where(x => x.Id == (int)ConfigParamId.SupportEmail).Select(x => x.Value).FirstOrDefaultAsync();
+                if (emailSupport != null)
+                {
+                    await _emailSender.SendEmailAsync(emailSupport, "Server Error", htmlText);
+                }
             }
 
         }

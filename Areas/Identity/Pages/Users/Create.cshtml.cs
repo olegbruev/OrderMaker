@@ -33,6 +33,8 @@ using Microsoft.Extensions.Options;
 using Mtd.OrderMaker.Web.Areas.Identity.Data;
 using Mtd.OrderMaker.Web.DataConfig;
 using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 
 namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Users
 {
@@ -43,7 +45,7 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Users
         private readonly IEmailSender _emailSender;
         private readonly ILogger<CreateModel> _logger;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IOptions<ConfigSettings> _options;
+        private readonly IOptions<RequestLocalizationOptions> _options;
         private readonly IStringLocalizer<CreateModel> _localizer;
 
 
@@ -53,7 +55,7 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Users
             IEmailSender emailSender,
             ILogger<CreateModel> logger,
             IHostingEnvironment hostingEnvironment,
-            IOptions<ConfigSettings> options,
+            IOptions<RequestLocalizationOptions> options,
             IStringLocalizer<CreateModel> localizer
             )
         {
@@ -139,9 +141,10 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Users
                 string contentRootPath = _hostingEnvironment.ContentRootPath;
 
                 string culture = "";
-                if (!_options.Value.CultureInfo.Equals("en-US"))
+                RequestCulture requestCulture = new RequestCulture("en-US");
+                if (!_options.Value.DefaultRequestCulture.Equals(requestCulture))
                 {
-                    culture = $".{_options.Value.CultureInfo}";
+                    culture = ".ru-RU";
                 }
 
                 var file = Path.Combine(contentRootPath, "wwwroot", "lib", "mtd-ordermaker", "emailform", $"userCreated{culture}.html" );

@@ -15,6 +15,6 @@ namespace Mtd.OrderMaker.Web.DataConfig
         EmailFromAddress = 6,
         EmailPassword = 7,
         EmailSmtpServer = 8,
-        EmailServerPort = 9,
+        EmailSmtpPort = 9,
     }
 }

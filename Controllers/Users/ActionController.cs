@@ -19,6 +19,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Mtd.OrderMaker.Web.Data;
@@ -58,9 +59,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
                 protocol: Request.Scheme);
 
             string culture = "";
-            if (!_options.Value.CultureInfo.Equals("en-US"))
+            RequestCulture requestCulture = new RequestCulture("en-US");
+            if (!_options.Value.DefaultRequestCulture.Equals(requestCulture))
             {
-                culture = $".{_options.Value.CultureInfo}";
+                culture = ".ru-RU";
             }
 
             string webRootPath = _hostingEnvironment.WebRootPath;
@@ -101,9 +103,10 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
                 protocol: Request.Scheme);
 
             string culture = "";
-            if (!_options.Value.CultureInfo.Equals("en-US"))
+            RequestCulture requestCulture = new RequestCulture("en-US");
+            if (!_options.Value.DefaultRequestCulture.Equals(requestCulture))
             {
-                culture = $".{_options.Value.CultureInfo}";
+                culture = ".ru-RU";
             }
 
             string webRootPath = _hostingEnvironment.WebRootPath;

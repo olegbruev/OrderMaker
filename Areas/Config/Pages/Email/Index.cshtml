@@ -1,0 +1,107 @@
+﻿@page
+@model IndexModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+
+@{
+    ViewData["Title"] = Localizer["Email"];
+    ViewData["SecondTitle"] = Localizer["Notifications settings"];
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/lib/mtd-ordermaker/config/css/mtd-config-form.css" asp-append-version="true" />
+}
+
+@section Breadcrumb {
+    <li><a href="/config">@Localizer["Configurator"]</a></li>
+    <li>@ViewBag.Title</li>
+}
+
+
+<div class="mtd-desk">
+    <form mtd-data-form method="post" autocomplete="off" action="">
+        <div class="mtd-desk-savebar">
+            <button mtd-data-clicker type="button" class="mdc-fab mdc-fab--extended">
+                <span class="material-icons mdc-fab__icon">save</span>
+                <span class="mdc-fab__label">@Localizer["Save"]</span>
+            </button>
+        </div>
+        <div class="mtd-desk-fields">
+            <div class="mtd-desk-field">
+                <div class="mdc-text-field mdc-text-field--outlined">
+                    <input type="text" id="from-name" class="mdc-text-field__input" asp-for="@Model.Input.FromName" required />
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="from-name" class="mdc-floating-label">@Localizer["From name"]</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mtd-desk-field">
+                <div class="mdc-text-field mdc-text-field--outlined">
+                    <input type="email" id="from-address" class="mdc-text-field__input" asp-for="@Model.Input.FromAddress" required />
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="from-address" class="mdc-floating-label">@Localizer["From address"]</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mtd-desk-field">
+                <div class="mdc-text-field mdc-text-field--outlined">
+                    <input type="password" id="email-password" class="mdc-text-field__input" asp-for="@Model.Input.EmailPassword" value="@Model.Input.EmailPassword" required />
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="email-password" class="mdc-floating-label">@Localizer["Password"]</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mtd-desk-fields">
+            <div class="mtd-desk-field">
+                <div class="mdc-text-field mdc-text-field--outlined">
+                    <input type="text" id="smtp-server" class="mdc-text-field__input" asp-for="@Model.Input.SmtpServer" required />
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="smtp-server" class="mdc-floating-label">@Localizer["Smtp Server"]</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mtd-desk-field">
+                <div class="mdc-text-field mdc-text-field--outlined">
+                    <input type="number" id="smtp-port" class="mdc-text-field__input" asp-for="@Model.Input.SmtpPort" required />
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="tf-outlined" class="mdc-floating-label">@Localizer["Smtp port"]</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mtd-desk-field">
+                <div class="mdc-text-field mdc-text-field--outlined">
+                    <input type="email" id="support-email" class="mdc-text-field__input" asp-for="@Model.Input.SupportEmail" required />
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="support-email" class="mdc-floating-label">@Localizer["Support Email"]</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

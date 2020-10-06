@@ -5,9 +5,11 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
@@ -23,11 +25,11 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Account
         private readonly UserManager<WebAppUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IOptions<ConfigSettings> _options;
+        private readonly IOptions<RequestLocalizationOptions> _options;
         private readonly IStringLocalizer<ForgotPasswordModel> _localizer;
 
-        public ForgotPasswordModel(UserManager<WebAppUser> userManager, IEmailSender emailSender,IHostingEnvironment hostingEnvironment, 
-            IOptions<ConfigSettings> options, IStringLocalizer<ForgotPasswordModel> localizer)
+        public ForgotPasswordModel(UserManager<WebAppUser> userManager, IEmailSender emailSender,IHostingEnvironment hostingEnvironment,
+            IOptions<RequestLocalizationOptions> options, IStringLocalizer<ForgotPasswordModel> localizer)
         {
             _userManager = userManager;
             _emailSender = emailSender;
@@ -67,9 +69,10 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Account
                     protocol: Request.Scheme);
 
                 string culture = "";
-                if (!_options.Value.CultureInfo.Equals("en-US"))
+                RequestCulture requestCulture = new RequestCulture("en-US");
+                if (!_options.Value.DefaultRequestCulture.Equals(requestCulture))
                 {
-                    culture = $".{_options.Value.CultureInfo}";
+                    culture = ".ru-RU";
                 }
 
                 string webRootPath = _hostingEnvironment.WebRootPath;

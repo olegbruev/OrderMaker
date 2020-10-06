@@ -22,6 +22,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -48,7 +49,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly OrderMakerContext _context;
         private readonly IStringLocalizer<UsersController> _localizer;
-        private readonly IOptions<ConfigSettings> _options;
+        private readonly IOptions<RequestLocalizationOptions> _options;
 
         private readonly List<string> claimValues = new List<string>() {
             "-create","-view","-edit", "-delete", "-view-own", "-edit-own", "-delete-own",
@@ -66,8 +67,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
             IEmailSender emailSender,
             IHostingEnvironment hostingEnvironment,
             OrderMakerContext context,
-            IStringLocalizer<UsersController> localizer, 
-            IOptions<ConfigSettings> options
+            IStringLocalizer<UsersController> localizer,
+            IOptions<RequestLocalizationOptions> options
             )
         {
             _userManager = userManager;
