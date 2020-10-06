@@ -84,7 +84,7 @@ namespace Mtd.OrderMaker.Web
             services.AddMvc()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddAuthorization(options =>
             {
@@ -116,7 +116,7 @@ namespace Mtd.OrderMaker.Web
                     .SetApplicationName($"ordermaker-{CurrentEnvironment.EnvironmentName}")
                     .PersistKeysToFileSystem(new DirectoryInfo($@"{CurrentEnvironment.ContentRootPath}\keys"));
 
-            services.AddHostedService<MigrationHostedStartup>();
+            services.AddHostedService<StartupMigration>();
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
@@ -127,7 +127,6 @@ namespace Mtd.OrderMaker.Web
                 builder.AddRazorRuntimeCompilation();
             }
 #endif
-
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -144,6 +143,7 @@ namespace Mtd.OrderMaker.Web
 
             });
 
+            services.AddHostedService<StartupCulture>();
         }
 
 
@@ -163,19 +163,6 @@ namespace Mtd.OrderMaker.Web
             }
 
             var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
-            var context = serviceProvider.GetRequiredService<OrderMakerContext>();
-            int cultureId = (int) ConfigParamId.DefaultCulture;
-            bool canConnect = context.Database.CanConnect();
-            if (canConnect)
-            {
-                string culture = context.MtdConfigParam.Where(x => x.Id == cultureId).Select(x => x.Value).FirstOrDefault();
-                if (culture != null)
-                {
-                    locOptions.Value.DefaultRequestCulture = new RequestCulture(culture);
-                }
-            }
-            
-
             app.UseRequestLocalization(locOptions.Value);
 
             app.UseHttpsRedirection();
@@ -194,12 +181,6 @@ namespace Mtd.OrderMaker.Web
 
             app.UseMvc();
         }
-
-
-
-
-
-
 
     }
 }

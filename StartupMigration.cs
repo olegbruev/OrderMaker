@@ -12,10 +12,11 @@ using System.Threading.Tasks;
 
 namespace Mtd.OrderMaker.Web
 {
-    public class MigrationHostedStartup : IHostedService
+    public class StartupMigration : IHostedService
     {
         private readonly IServiceProvider serviceProvider;
-        public MigrationHostedStartup(IServiceProvider serviceProvider)
+
+        public StartupMigration(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
