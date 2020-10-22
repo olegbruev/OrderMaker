@@ -12,6 +12,7 @@ appsettings.Development.json
 appsettings.Prodaction.json
 
 package-lock.json
+Dockerfile
 
 /keys
 /node_modules

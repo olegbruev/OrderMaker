@@ -31,8 +31,14 @@
       "commandName": "IIS",
       "workingDirectory": "C:\\inetpub\\OrderMaker",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Prodaction"
+        "ASPNETCORE_ENVIRONMENT": "Production"
       }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true
     }
   }
 }

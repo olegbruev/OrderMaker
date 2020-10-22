@@ -48,6 +48,7 @@ namespace Mtd.OrderMaker.Web.Pages
 
         public async Task<IActionResult> OnGetAsync(string searchText)
         {
+            
             WebAppUser user = await _userHandler.GetUserAsync(HttpContext.User);
 
             List<string> formIds = await _userHandler.GetFormIdsAsync(user, RightsType.View, RightsType.ViewGroup, RightsType.ViewOwn);

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mtd.OrderMaker.Web.Areas.Identity.Data;
 using Mtd.OrderMaker.Web.Data;
@@ -19,9 +20,12 @@ namespace Mtd.OrderMaker.Web
     public class StartupCulture : IHostedService
     {
         private readonly IServiceProvider serviceProvider;
-        public StartupCulture(IServiceProvider serviceProvider)
+        private readonly ILogger<StartupCulture> logger;
+
+        public StartupCulture(IServiceProvider serviceProvider, ILogger<StartupCulture> logger)
         {
             this.serviceProvider = serviceProvider;
+            this.logger = logger;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -32,7 +36,17 @@ namespace Mtd.OrderMaker.Web
                 var dbContext = scope.ServiceProvider.GetRequiredService<OrderMakerContext>();
                 var locOptions = scope.ServiceProvider.GetRequiredService<IOptions<RequestLocalizationOptions>>();
                 int cultureId = (int)ConfigParamId.DefaultCulture;
-                bool canConnect = await dbContext.Database.CanConnectAsync();
+
+                bool canConnect = false;
+                try
+                {
+                    canConnect = await dbContext.Database.CanConnectAsync();
+
+                }  catch {
+
+                    logger.LogError("Error connection to database");
+                }
+                
                 if (canConnect)
                 {
                     string culture = await dbContext.MtdConfigParam.Where(x => x.Id == cultureId).Select(x => x.Value).FirstOrDefaultAsync();

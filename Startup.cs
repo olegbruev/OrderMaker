@@ -41,6 +41,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using System.Globalization;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Mtd.OrderMaker.Web
 {
@@ -59,27 +60,25 @@ namespace Mtd.OrderMaker.Web
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddDbContext<IdentityDbContext>(options => options.UseMySql(Configuration.GetConnectionString("IdentityConnection")));
+            services.AddDbContext<OrderMakerContext>(options => options.UseMySql(Configuration.GetConnectionString("DataConnection")));
+
             services.Configure<CookiePolicyOptions>(options =>
             {
-
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.Lax;
             });
 
-            services.AddDbContext<IdentityDbContext>(options =>
-                options.UseMySql(
-                    Configuration.GetConnectionString("IdentityConnection")));
+            services.AddRazorPages();
 
-            services.AddDefaultIdentity<WebAppUser>(config =>
-            {
-                config.SignIn.RequireConfirmedEmail = false;
-                config.User.RequireUniqueEmail = true;
-
-            }).AddRoles<WebAppRole>()
-             .AddEntityFrameworkStores<IdentityDbContext>()
+            services.AddDefaultIdentity<WebAppUser>(options =>
+             {
+                 options.SignIn.RequireConfirmedAccount = true;
+                 options.SignIn.RequireConfirmedEmail = false;
+                 options.User.RequireUniqueEmail = true;
+             }).AddRoles<WebAppRole>()
+                .AddEntityFrameworkStores<IdentityDbContext>()
                 .AddDefaultTokenProviders();
-
-            services.AddDbContext<OrderMakerContext>(options => options.UseMySql(Configuration.GetConnectionString("DataConnection")));
 
             services.AddMvc()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
@@ -105,16 +104,15 @@ namespace Mtd.OrderMaker.Web
                         options.Conventions.AuthorizeAreaFolder("Config", "/", "RoleAdmin");
                     });
 
+
             services.AddScoped<UserHandler>();
             services.AddTransient<ConfigHandler>();
             services.AddTransient<IEmailSender, EmailSender>();
-            services.AddTransient<IEmailSenderBlank, EmailSenderBlank>();               
+            services.AddTransient<IEmailSenderBlank, EmailSenderBlank>();
 
             services.AddDataProtection()
                     .SetApplicationName($"ordermaker-{CurrentEnvironment.EnvironmentName}")
-                    .PersistKeysToFileSystem(new DirectoryInfo($@"{CurrentEnvironment.ContentRootPath}\keys"));
-
-            services.AddHostedService<StartupMigration>();
+                    .PersistKeysToFileSystem(new DirectoryInfo($@"{CurrentEnvironment.ContentRootPath}/keys"));
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
@@ -130,8 +128,8 @@ namespace Mtd.OrderMaker.Web
             {
                 var supportedCultures = new[]
                 {
-                    new CultureInfo("en-US"),
-                    new CultureInfo("ru-RU"),
+                                new CultureInfo("en-US"),
+                                new CultureInfo("ru-RU"),
                 };
 
                 options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");
@@ -141,12 +139,14 @@ namespace Mtd.OrderMaker.Web
 
             });
 
+            services.AddHostedService<StartupMigration>();
             services.AddHostedService<StartupCulture>();
         }
 
 
-        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
-        {          
+        public void Configure(IApplicationBuilder app)
+        {
+
             if (CurrentEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -168,10 +168,11 @@ namespace Mtd.OrderMaker.Web
 
             app.UseCookiePolicy();
             app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
-            {
+            {                
                 endpoints.MapRazorPages();
             });
 
