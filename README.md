@@ -8,6 +8,4 @@ please refer to the THIRD-PARTY-NOTICES.txt files.
 
 For further information  on OrderMaker or additional documentation, visit http://ordermaker.org/
 
-Companies developing a project-based on MTD OrderMaker: <a href="https://ceoserv.com">CEOTEX LLC<a/>
-
 
