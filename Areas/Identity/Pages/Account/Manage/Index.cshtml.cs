@@ -22,7 +22,7 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<WebAppUser> _userManager;
         private readonly SignInManager<WebAppUser> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly IOptions<RequestLocalizationOptions> _options;
         private readonly IStringLocalizer<IndexModel> _localizer;
 
@@ -30,8 +30,8 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Account.Manage
         public IndexModel(
             UserManager<WebAppUser> userManager,
             SignInManager<WebAppUser> signInManager,
-            IEmailSender emailSender, 
-            IHostingEnvironment hostingEnvironment,
+            IEmailSender emailSender,
+            IWebHostEnvironment hostingEnvironment,
             IStringLocalizer<IndexModel> localizer,
             IOptions<RequestLocalizationOptions> options
             )

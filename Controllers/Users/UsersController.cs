@@ -46,7 +46,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
         private readonly RoleManager<WebAppRole> _roleManager;
         private readonly SignInManager<WebAppUser> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly OrderMakerContext _context;
         private readonly IStringLocalizer<UsersController> _localizer;
         private readonly IOptions<RequestLocalizationOptions> _options;
@@ -65,7 +65,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Users
             RoleManager<WebAppRole> roleManager,
         SignInManager<WebAppUser> signInManager,
             IEmailSender emailSender,
-            IHostingEnvironment hostingEnvironment,
+            IWebHostEnvironment hostingEnvironment,
             OrderMakerContext context,
             IStringLocalizer<UsersController> localizer,
             IOptions<RequestLocalizationOptions> options

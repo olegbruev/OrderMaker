@@ -161,7 +161,7 @@ namespace Mtd.OrderMaker.Web.DataHandler.Approval
                 if (firstStage != null)
                 {
                     forOwner = (store.MtdStoreOwner.UserId.Equals(user.Id) && mtdApprovalStage.Id.Equals(firstStage.Id));
-                }                
+                }
             }
 
             if (mtdApprovalStage != null && (mtdApprovalStage.UserId.Equals(user.Id) || forOwner)) { return true; }
@@ -292,7 +292,7 @@ namespace Mtd.OrderMaker.Web.DataHandler.Approval
             }
             catch (Exception ex)
             {
-                throw ex.InnerException;                
+                throw ex.InnerException;
             }
 
             return true;
@@ -335,14 +335,7 @@ namespace Mtd.OrderMaker.Web.DataHandler.Approval
             }
             else
             {
-                try
-                {
-                    _context.MtdStoreApproval.Update(storeApproval);
-                }
-                catch (Exception e)
-                {
-                    throw e;
-                }
+                _context.MtdStoreApproval.Update(storeApproval);
             }
 
             MtdLogApproval mtdLogApproval = new MtdLogApproval()

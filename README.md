@@ -1,4 +1,4 @@
-<strong>MTD OrderMaker Community</strong>  is web constructor that provides ability to make a knowledge base, query management system or any solutions based on forms and fields in a short time.
+<strong>MTD OrderMaker</strong>  is web constructor that provides ability to make a knowledge base, query management system or any solutions based on forms and fields in a short time.
 
 License information can be found in the LICENSE file.
 

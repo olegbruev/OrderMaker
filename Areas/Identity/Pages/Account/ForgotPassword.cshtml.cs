@@ -24,11 +24,11 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Account
     {
         private readonly UserManager<WebAppUser> _userManager;
         private readonly IEmailSender _emailSender;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly IOptions<RequestLocalizationOptions> _options;
         private readonly IStringLocalizer<ForgotPasswordModel> _localizer;
 
-        public ForgotPasswordModel(UserManager<WebAppUser> userManager, IEmailSender emailSender,IHostingEnvironment hostingEnvironment,
+        public ForgotPasswordModel(UserManager<WebAppUser> userManager, IEmailSender emailSender, IWebHostEnvironment hostingEnvironment,
             IOptions<RequestLocalizationOptions> options, IStringLocalizer<ForgotPasswordModel> localizer)
         {
             _userManager = userManager;

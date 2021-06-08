@@ -37,12 +37,12 @@ namespace Mtd.OrderMaker.Web.Services
     public class EmailSender : IEmailSender
     {
         private EmailSettings emailSettings;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly OrderMakerContext context;
 
 
 
-        public EmailSender(OrderMakerContext context, IHostingEnvironment hostingEnvironment)
+        public EmailSender(OrderMakerContext context, IWebHostEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
             this.context = context;

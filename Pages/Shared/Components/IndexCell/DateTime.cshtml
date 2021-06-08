@@ -19,7 +19,7 @@
 @model Models.Index.CellModelView
 @{
     string dateValue = "";
-    if (Model.MtdStoreStack.MtdStoreStackDate != null && Model.MtdStoreStack.MtdStoreStackDate.Register != null)
+    if (Model.MtdStoreStack.MtdStoreStackDate != null && Model.MtdStoreStack.MtdStoreStackDate.Register != DateTime.MinValue)
     {
         dateValue = Model.MtdStoreStack.MtdStoreStackDate.Register.ToString("g");
     }

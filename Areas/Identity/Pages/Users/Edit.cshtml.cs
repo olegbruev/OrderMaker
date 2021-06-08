@@ -38,13 +38,13 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Users
         private readonly UserManager<WebAppUser> _userManager;
         private readonly RoleManager<WebAppRole> _roleManager;
         private readonly IEmailSender _emailSender;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
         public EditModel(
             UserManager<WebAppUser> userManager,
             RoleManager<WebAppRole> roleManager,
             IEmailSender emailSender,
-            IHostingEnvironment hostingEnvironment
+            IWebHostEnvironment hostingEnvironment
             )
         {
             _userManager = userManager;

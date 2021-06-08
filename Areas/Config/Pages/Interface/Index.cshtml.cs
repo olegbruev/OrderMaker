@@ -43,12 +43,11 @@ namespace Mtd.OrderMaker.Web.Areas.Config.Pages.Interface
 
         private readonly OrderMakerContext _context;
         private readonly IOptions<RequestLocalizationOptions> locOptions;
-        private readonly IHostApplicationLifetime appLifetime;
+
         public IndexModel(OrderMakerContext context, IOptions<RequestLocalizationOptions> locOptions)
         {
             _context = context;
             this.locOptions = locOptions;
-            this.appLifetime = appLifetime;
         }
 
         public List<SelectListItem> CultureItems { get; set; }

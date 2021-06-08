@@ -44,7 +44,7 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Users
         private readonly SignInManager<WebAppUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<CreateModel> _logger;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly IOptions<RequestLocalizationOptions> _options;
         private readonly IStringLocalizer<CreateModel> _localizer;
 
@@ -54,7 +54,7 @@ namespace Mtd.OrderMaker.Web.Areas.Identity.Pages.Users
             SignInManager<WebAppUser> signInManager,
             IEmailSender emailSender,
             ILogger<CreateModel> logger,
-            IHostingEnvironment hostingEnvironment,
+            IWebHostEnvironment hostingEnvironment,
             IOptions<RequestLocalizationOptions> options,
             IStringLocalizer<CreateModel> localizer
             )

@@ -21,10 +21,10 @@
 
 @{
     string dateValue = "";
-    if (Model.MtdStoreStackDate.Register != null)
+    if (Model.MtdStoreStackDate.Register != DateTime.MinValue)
     {
         dateValue = Model.MtdStoreStackDate.Register.ToString("g");
-        if (dateValue.Equals("01.01.0001 0:00"))
+        if (dateValue.Equals(DateTime.MinValue))
         {
             dateValue = "";
         }

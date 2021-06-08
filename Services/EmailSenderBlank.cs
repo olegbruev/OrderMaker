@@ -30,11 +30,11 @@ namespace Mtd.OrderMaker.Web.Services
     public class EmailSenderBlank : IEmailSenderBlank
     {
         private EmailSettings emailSettings;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly OrderMakerContext context;
 
 
-        public EmailSenderBlank(OrderMakerContext context, IHostingEnvironment hostingEnvironment)
+        public EmailSenderBlank(OrderMakerContext context, IWebHostEnvironment hostingEnvironment)
         {
             this.context = context;
             _hostingEnvironment = hostingEnvironment;

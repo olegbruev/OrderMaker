@@ -106,8 +106,7 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
             {
                 FileDownloadName = $"{DateTime.UtcNow:yyyyMMddHHmmss}.xlsx"
             };
-
-            return Ok();
+    
         }
 
         private IWorkbook CreateWorkbook(IList<MtdStore> mtdStores, IList<MtdFormPartField> partFields, IList<MtdStoreStack> storeStack)

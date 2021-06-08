@@ -194,8 +194,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
             string valueFieldList = requestForm[$"{valueField}-inputlist"];
 
             string result = "";
-            if (valueFilter.FirstOrDefault() != null) { result = valueFilter; }
-            if (valueFieldList.FirstOrDefault() != null) { result = valueFieldList; }
+            if (valueFilter != null) { result = valueFilter; }
+            if (valueFieldList != null) { result = valueFieldList; }
 
             WebAppUser user = await _userManager.GetUserAsync(User);
             MtdFilter filter = await _context.MtdFilter.FirstOrDefaultAsync(x => x.IdUser == user.Id & x.MtdForm == idForm);
@@ -361,8 +361,8 @@ namespace Mtd.OrderMaker.Web.Controllers.Index
             string showNumber = requestForm["indexDataColumnNumber"];
             string showDate = requestForm["indexDataColumnDate"];
 
-            List<string> fieldIds = new List<string>();
-            if (data.FirstOrDefault() != null && data.Length > 0) fieldIds = data.Split(",").ToList();
+            List<string> fieldIds = new();
+            if (data != null && data.Length > 0) fieldIds = data.Split(",").ToList();
             WebAppUser user = await _userManager.GetUserAsync(User);
             MtdFilter filter = await _context.MtdFilter.Include(m => m.MtdFilterColumn).FirstOrDefaultAsync(x => x.IdUser == user.Id & x.MtdForm == idForm);
 

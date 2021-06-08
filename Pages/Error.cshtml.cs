@@ -44,7 +44,7 @@ namespace Mtd.OrderMaker.Web.Pages
     {
 
         private readonly IEmailSender _emailSender;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly OrderMakerContext context;
 
         public string RequestId { get; set; }
@@ -53,7 +53,7 @@ namespace Mtd.OrderMaker.Web.Pages
 
         public ErrorModel(
             IEmailSender emailSender,
-            IHostingEnvironment hostingEnvironment, OrderMakerContext context)
+            IWebHostEnvironment hostingEnvironment, OrderMakerContext context)
 
         {
             _emailSender = emailSender;
