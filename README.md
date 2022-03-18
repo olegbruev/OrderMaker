@@ -8,4 +8,5 @@ please refer to the THIRD-PARTY-NOTICES.txt files.
 
 For further information  on OrderMaker or additional documentation, visit http://ordermaker.org/
 
-
+This repository is archived and is not maintained.
+Use the new version [Mrd OrderMaker Server](https://github.com/olegbruev/OrderMakerServer)
