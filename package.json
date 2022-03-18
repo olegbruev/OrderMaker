@@ -10,7 +10,7 @@
     "gulp-clean-css": "4.0.0",
     "gulp-less": "3.3.0",
     "load-grunt-tasks": "5.1.0",
-    "node-sass": "4.14.1",
+    "node-sass": "7.0.0",
     "path": "0.12.7",
     "@material/elevation": "1.1.0"
   }
